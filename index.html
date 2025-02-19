@@ -8,9 +8,10 @@
         body {
             font-family: Arial, sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
             background-color: #f0f0f0;
         }
 
@@ -31,31 +32,58 @@
             border: 1px solid #ccc;
             font-size: 24px;
             font-weight: bold;
-            cursor: default;
+            cursor: pointer;
             user-select: none;
         }
 
-        .highlight {
-            background-color: #ffeb3b;
+        .selected {
+            background-color: #a0e7e5;
+        }
+
+        .correct {
+            background-color: #b4f8c8;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: green;
         }
     </style>
 </head>
 <body>
+    <h1>Sopa de Letras - Encuentra "SONI"</h1>
     <div class="grid-container" id="sopaDeLetras"></div>
+    <div class="message" id="mensaje"></div>
 
     <script>
         const gridSize = 6;
         const palabra = "SONI";
-        const grid = [];
+        let grid = [];
+        let seleccionadas = [];
 
         // Genera una matriz de letras aleatorias
         function generarSopa() {
             const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            grid = [];
+            const container = document.getElementById("sopaDeLetras");
+            container.innerHTML = "";
+            document.getElementById("mensaje").textContent = "";
+
             for (let i = 0; i < gridSize; i++) {
                 grid[i] = [];
                 for (let j = 0; j < gridSize; j++) {
                     const letraRandom = letras[Math.floor(Math.random() * letras.length)];
                     grid[i][j] = letraRandom;
+
+                    const cell = document.createElement("div");
+                    cell.classList.add("cell");
+                    cell.textContent = letraRandom;
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    cell.addEventListener("click", seleccionarLetra);
+                    container.appendChild(cell);
                 }
             }
 
@@ -65,27 +93,46 @@
 
             for (let i = 0; i < palabra.length; i++) {
                 grid[startRow][startCol + i] = palabra[i];
+                const index = startRow * gridSize + (startCol + i);
+                const cell = container.children[index];
+                cell.textContent = palabra[i];
             }
         }
 
-        // Renderiza la sopa de letras en el navegador
-        function renderizarSopa() {
-            const container = document.getElementById("sopaDeLetras");
-            container.innerHTML = "";
+        // Maneja la selección de letras
+        function seleccionarLetra(event) {
+            const cell = event.target;
+            cell.classList.toggle("selected");
 
-            for (let i = 0; i < gridSize; i++) {
-                for (let j = 0; j < gridSize; j++) {
-                    const cell = document.createElement("div");
-                    cell.classList.add("cell");
-                    cell.textContent = grid[i][j];
-                    container.appendChild(cell);
-                }
+            const letra = cell.textContent;
+            if (cell.classList.contains("selected")) {
+                seleccionadas.push(letra);
+            } else {
+                seleccionadas = seleccionadas.filter(l => l !== letra);
+            }
+
+            comprobarPalabra();
+        }
+
+        // Verifica si la palabra seleccionada es correcta
+        function comprobarPalabra() {
+            if (seleccionadas.join("") === palabra) {
+                document.getElementById("mensaje").textContent = "¡CORRECTO!";
+                document.querySelectorAll(".selected").forEach(cell => {
+                    cell.classList.remove("selected");
+                    cell.classList.add("correct");
+                });
+
+                setTimeout(() => {
+                    generarSopa();
+                    seleccionadas = [];
+                }, 2000);
             }
         }
 
-        // Generar y renderizar la sopa de letras
+        // Inicializa la sopa de letras
         generarSopa();
-        renderizarSopa();
     </script>
 </body>
 </html>
+
