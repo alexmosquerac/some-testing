@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sopa de Letras - SONI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(6, 50px);
+            grid-template-rows: repeat(6, 50px);
+            gap: 5px;
+        }
+
+        .cell {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: default;
+            user-select: none;
+        }
+
+        .highlight {
+            background-color: #ffeb3b;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-container" id="sopaDeLetras"></div>
+
+    <script>
+        const gridSize = 6;
+        const palabra = "SONI";
+        const grid = [];
+
+        // Genera una matriz de letras aleatorias
+        function generarSopa() {
+            const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            for (let i = 0; i < gridSize; i++) {
+                grid[i] = [];
+                for (let j = 0; j < gridSize; j++) {
+                    const letraRandom = letras[Math.floor(Math.random() * letras.length)];
+                    grid[i][j] = letraRandom;
+                }
+            }
+
+            // Insertar la palabra "SONI" horizontalmente
+            const startRow = Math.floor(Math.random() * gridSize);
+            const startCol = Math.floor(Math.random() * (gridSize - palabra.length + 1));
+
+            for (let i = 0; i < palabra.length; i++) {
+                grid[startRow][startCol + i] = palabra[i];
+            }
+        }
+
+        // Renderiza la sopa de letras en el navegador
+        function renderizarSopa() {
+            const container = document.getElementById("sopaDeLetras");
+            container.innerHTML = "";
+
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    const cell = document.createElement("div");
+                    cell.classList.add("cell");
+                    cell.textContent = grid[i][j];
+                    container.appendChild(cell);
+                }
+            }
+        }
+
+        // Generar y renderizar la sopa de letras
+        generarSopa();
+        renderizarSopa();
+    </script>
+</body>
+</html>
